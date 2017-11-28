@@ -9,33 +9,56 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
-    var flipCount: Int = 0
-    
-    @IBAction func touchCard(_ sender: UIButton) {
-        flipCard(withEmoji: "🤯", on: sender)
+    @IBAction func startNewGame(_ sender: UIButton) {
+        flipCount = 0
+        self.game = Concentration(numberOfPairs: (cardButtons.count + 1) / 2)
+        updateViewFromModel()
+    }
+    lazy var game = Concentration(numberOfPairs: (cardButtons.count + 1) / 2)
+    @IBOutlet weak var flipCountLabel: UILabel!
+    @IBOutlet var cardButtons: [UIButton]!
+    var flipCount: Int = 0 {
+        didSet {
+            flipCountLabel.text = "Flip Count: \(flipCount)"
+        }
     }
     
+    @IBAction func touchCard(_ sender: UIButton) {
+        if let cardNumber = cardButtons.index(of: sender) {
+            game.chooseCard(at: cardNumber)
+            flipCount += 1
+            updateViewFromModel()
+            print("\(String(describing: cardNumber))")
+        }
+    }
+    func updateViewFromModel() {
+        for index in cardButtons.indices {
+            let button = cardButtons[index]
+            let card = game.cards[index]
+            if card.isFaceUp {
+                button.setTitle(emoji(for: card), for: .normal)
+                button.backgroundColor = .clear
+            } else {
+                button.setTitle("", for: .normal)
+                button.backgroundColor = card.isMatched ? .clear : .blue
+            }
+        }
+    }
+    var emojiChoices = ["🤪", "🤯", "🤮", "🤩", "🧐", "🤫", "🤥", "😱"]
+
+    var emoji = [Int: String]()
+    func emoji(for card: Card) -> String {
+        if emoji[card.identifier] == nil, emojiChoices.count > 0 {
+            let randomIndex = Int(arc4random_uniform(UInt32(emojiChoices.count)))
+            emoji[card.identifier] = emojiChoices.remove(at: randomIndex)
+        }
+        return emoji[card.identifier] ?? "?"
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        
-    }
-    
-    func flipCard(withEmoji emoji: String, on button: UIButton) {
-        if button.currentTitle == emoji {
-            button.setTitle("", for: .normal)
-            button.backgroundColor = UIColor.blue
-            
-        } else {
-            button.setTitle(emoji, for: .normal)
-            button.backgroundColor = UIColor.white
-        }
-        flipCount += 1
-    }
+
 
 }
 
