@@ -14,7 +14,7 @@ class Concentration {
     func chooseCard(at index: Int) {
         if !cards[index].isMatched {
             if let matchIndex = indexOfOneCardFacedUp, matchIndex != index {
-                if cards[matchIndex].identifier == cards[index].identifier {
+                if cards[matchIndex] == cards[index] {
                     cards[matchIndex].isMatched = true
                     cards[index].isMatched = true
                 }
@@ -42,7 +42,9 @@ class Concentration {
         cards.shuffle()
     }
 }
-
+/*
+ https://github.com/raywenderlich/swift-algorithm-club/tree/master/Shuffle
+*/
 public func random(_ n: Int) -> Int {
     return Int(arc4random_uniform(UInt32(n)))
 }
@@ -54,28 +56,21 @@ extension Array {
      Time complexity: O(n)
      */
     public mutating func shuffle() {
-        for i in (1...count-1).reversed() {
-            let j = random(i + 1)
-            if i != j {
-                let t = self[i]
-                self[i] = self[j]
+        
+        // for index in the range (arrayLength-1 through 1) //counting backwards
+        for index in (1...self.count-1).reversed() {
+            // j = random integer + 1
+            let j = random(index + 1)
+            // if index is not equal to our random index
+            if index != j {
+                // t is the value at the index of i
+                let t = self[index]
+                // set the value at index i to the value found at index j
+                self[index] = self[j]
+                // the value at index j is now t
                 self[j] = t
             }
         }
     }
 }
 
- /*
- Simultaneously initializes an array with the values 0...n-1 and shuffles it.
- */
-public func shuffledArray(_ n: Int) -> [Int] {
-    var a = Array(repeating: 0, count: n)
-    for i in 0..<n {
-        let j = random(i + 1)
-        if i != j {
-            a[i] = a[j]
-        }
-        a[j] = i  // insert next number from the sequence
-    }
-    return a
-}

@@ -9,8 +9,10 @@
 import UIKit
 
 class ViewController: UIViewController {
-    @IBAction func startNewGame(_ sender: UIButton) {
+    private var emojiChoices = [String]()
+    @IBAction func startNewGame(_ sender: Any) {
         flipCount = 0
+        self.emojiChoices = ["🤪", "🤯", "🤮", "🤩", "🧐", "🤫", "🤥", "😱"]
         self.game = Concentration(numberOfPairs: (cardButtons.count + 1) / 2)
         updateViewFromModel()
     }
@@ -44,21 +46,19 @@ class ViewController: UIViewController {
             }
         }
     }
-    var emojiChoices = ["🤪", "🤯", "🤮", "🤩", "🧐", "🤫", "🤥", "😱"]
+    
 
-    var emoji = [Int: String]()
-    func emoji(for card: Card) -> String {
-        if emoji[card.identifier] == nil, emojiChoices.count > 0 {
+    private var emoji = [Card: String]()
+    private func emoji(for card: Card) -> String {
+        if emoji[card] == nil, emojiChoices.count > 0 {
             let randomIndex = Int(arc4random_uniform(UInt32(emojiChoices.count)))
-            emoji[card.identifier] = emojiChoices.remove(at: randomIndex)
+            emoji[card] = emojiChoices.remove(at: randomIndex)
         }
-        return emoji[card.identifier] ?? "?"
+        return emoji[card] ?? "?"
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.startNewGame(true)
     }
-
-
-
 }
 
